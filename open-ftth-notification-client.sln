@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8846FAF7-EEF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenFTTH.NotificationClient", "src\OpenFTTH.NotificationClient\OpenFTTH.NotificationClient.csproj", "{2BEE5372-1516-4339-B98A-2E2C93D90C6F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "example", "example\example.csproj", "{024E06B6-0A90-4957-A248-F8CD0001E6EB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,10 @@ Global
 		{2BEE5372-1516-4339-B98A-2E2C93D90C6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2BEE5372-1516-4339-B98A-2E2C93D90C6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2BEE5372-1516-4339-B98A-2E2C93D90C6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{024E06B6-0A90-4957-A248-F8CD0001E6EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{024E06B6-0A90-4957-A248-F8CD0001E6EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{024E06B6-0A90-4957-A248-F8CD0001E6EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{024E06B6-0A90-4957-A248-F8CD0001E6EB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{2BEE5372-1516-4339-B98A-2E2C93D90C6F} = {8846FAF7-EEF7-44E7-9ABB-F07AB1E5A435}
