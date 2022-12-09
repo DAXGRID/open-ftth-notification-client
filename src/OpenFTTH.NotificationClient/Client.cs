@@ -49,7 +49,7 @@ internal class NotificationTcpClient : WsClient
     {
         base.OnDisconnected();
 
-        // Wait for a while...
+        // Wait for a while... Since we don't want to reconnect straight away.
         Thread.Sleep(1000);
 
         // Try to connect again
