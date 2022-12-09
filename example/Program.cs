@@ -23,13 +23,13 @@ internal static class Program
         var address = IPAddress.Parse("127.0.0.1");
         var port = 8000;
 
-        var client = new Client(address, port);
-        var connection = client.Connect();
+        using var client = new Client(address, port);
+        var connectionCh = client.Connect();
 
         _ = Task.Run(async () =>
         {
             Console.WriteLine("Starting reading...");
-            await foreach (var x in connection.ReadAllAsync())
+            await foreach (var x in connectionCh.ReadAllAsync())
             {
                 if (x.Type == nameof(Customer))
                 {
@@ -43,13 +43,12 @@ internal static class Program
             }
         });
 
-        for (var i = 0; i < 100000; i++)
+        for (var i = 0; i < 10000; i++)
         {
             var c = JsonSerializer.Serialize(new Customer("Rune", i));
             client.Send(new(nameof(Customer), c));
         }
 
         Console.ReadLine();
-        client.Disconnect();
     }
 }

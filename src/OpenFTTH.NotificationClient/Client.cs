@@ -6,7 +6,7 @@ using System.Threading.Channels;
 
 namespace OpenFTTH.NotificationClient;
 
-internal class NotificationTcpClient : WsClient
+internal sealed class NotificationTcpClient : WsClient
 {
     private readonly Action<string> _onMessageReceivedCallback;
     private bool _stop;
@@ -69,10 +69,11 @@ internal class NotificationTcpClient : WsClient
     }
 }
 
-public class Client
+public sealed class Client : IDisposable
 {
     private readonly NotificationTcpClient _notificationTcpClient;
     private readonly Channel<Notification> _channel;
+    private bool _disposed;
 
     public Client(IPAddress ipAddress, int port)
     {
@@ -82,20 +83,56 @@ public class Client
 
     public ChannelReader<Notification> Connect()
     {
-        _notificationTcpClient.ConnectAsync();
-        return _channel.Reader;
-    }
+        if (_disposed)
+        {
+            throw new InvalidOperationException(
+                "Cannot connect to a server that has already been disposed.");
+        }
 
-    public void Disconnect()
-    {
-        _notificationTcpClient.DisconnectAsync();
-        _channel.Writer.Complete();
+        if (_notificationTcpClient.IsConnected)
+        {
+            throw new InvalidOperationException(
+                "The server is already connected.");
+        }
+
+        _notificationTcpClient.ConnectAsync();
+
+        return _channel.Reader;
     }
 
     public void Send(Notification notification)
     {
         _notificationTcpClient.SendText(
             JsonConvert.SerializeObject(notification));
+    }
+
+    public void Dispose()
+    {
+        // No reason to dispose agian, when the resource has already been disposed.
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (_notificationTcpClient.IsConnected)
+        {
+            _notificationTcpClient.DisconnectAsync();
+        }
+        if (!_notificationTcpClient.IsDisposed)
+        {
+            _notificationTcpClient.Dispose();
+        }
+
+        try
+        {
+            _channel.Writer.Complete();
+        }
+        catch (InvalidOperationException)
+        {
+            // Do nothing, this can be because of channel has already been closed.
+        }
+
+        _disposed = true;
     }
 
     private void WriteNotificationToChannel(string s)
