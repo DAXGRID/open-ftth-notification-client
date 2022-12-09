@@ -29,6 +29,7 @@ jobs:
       - run:
           name: Push to NuGet
           command: |
+            cd src/OpenFTTH.NotificationClient
             dotnet pack --output ./publish --configuration Release -p:PackageVersion=${CIRCLE_TAG}
             dotnet nuget push --source "${NUGET_FEED_URL}" --api-key="${NUGET_KEY}" "./publish/*.nupkg"
 workflows:
