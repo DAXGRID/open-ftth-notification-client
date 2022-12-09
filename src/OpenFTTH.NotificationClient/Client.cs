@@ -6,12 +6,12 @@ using System.Threading.Channels;
 
 namespace OpenFTTH.NotificationClient;
 
-internal sealed class NotificationTcpClient : WsClient
+internal sealed class NotificationWsClient : WsClient
 {
     private readonly Action<string> _onMessageReceivedCallback;
     private bool _stop;
 
-    public NotificationTcpClient(
+    public NotificationWsClient(
         IPAddress address,
         int port,
         Action<string> onMessageReceivedCallback) : base(address, port)
@@ -71,7 +71,7 @@ internal sealed class NotificationTcpClient : WsClient
 
 public sealed class Client : IDisposable
 {
-    private readonly NotificationTcpClient _notificationTcpClient;
+    private readonly NotificationWsClient _notificationTcpClient;
     private readonly Channel<Notification> _channel;
     private bool _disposed;
 
