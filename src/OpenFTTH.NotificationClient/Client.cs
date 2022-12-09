@@ -23,6 +23,11 @@ internal class NotificationTcpClient : WsClient
     {
         _stop = true;
 
+        // The WebSocket protocol defines a status code of 1000
+        // to indicate that a normal closure,
+        // meaning that the connection is being closed in a normal way.
+        // This is a normal operation that occurs when a WebSocket connection is
+        // closed gracefully, without any errors.
         CloseAsync(1000);
 
         // We wait for it to disconnect, and keep yielding the thread until
