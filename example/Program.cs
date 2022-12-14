@@ -1,5 +1,6 @@
 ﻿using OpenFTTH.NotificationClient;
 using System.Net;
+using System.Net.Sockets;
 using System.Text.Json;
 
 namespace Example;
@@ -20,10 +21,13 @@ internal static class Program
 {
     public static void Main()
     {
-        var address = IPAddress.Parse("127.0.0.1");
+        var domain = "localhost";
         var port = 8000;
 
-        using var client = new Client(address, port);
+        var ipAddress = Dns.GetHostEntry(domain).AddressList
+            .First(x => x.AddressFamily == AddressFamily.InterNetwork);
+
+        using var client = new Client(ipAddress, port);
         var connectionCh = client.Connect();
 
         _ = Task.Run(async () =>
@@ -43,7 +47,7 @@ internal static class Program
             }
         });
 
-        for (var i = 0; i < 10000; i++)
+        for (var i = 0; i < 10; i++)
         {
             var c = JsonSerializer.Serialize(new Customer("Rune", i));
             client.Send(new(nameof(Customer), c));
