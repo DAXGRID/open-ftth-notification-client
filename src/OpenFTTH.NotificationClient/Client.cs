@@ -73,12 +73,21 @@ public sealed class Client : IDisposable
 {
     private readonly NotificationWsClient _notificationTcpClient;
     private readonly Channel<Notification> _channel;
+    private readonly bool _writeOnly;
+
     private bool _disposed;
 
     public Client(IPAddress ipAddress, int port)
     {
         _notificationTcpClient = new(ipAddress, port, WriteNotificationToChannel);
         _channel = Channel.CreateUnbounded<Notification>();
+    }
+
+    public Client(IPAddress ipAddress, int port, bool writeOnly)
+    {
+        _notificationTcpClient = new(ipAddress, port, WriteNotificationToChannel);
+        _channel = Channel.CreateUnbounded<Notification>();
+        _writeOnly = writeOnly;
     }
 
     public ChannelReader<Notification> Connect()
@@ -137,6 +146,13 @@ public sealed class Client : IDisposable
 
     private void WriteNotificationToChannel(string s)
     {
+        if (_writeOnly)
+        {
+            // When we are in write only mode, we only care about sending messages,
+            // so there is no reason to spend time deserialize messages.
+            return;
+        }
+
         var notification = JsonConvert.DeserializeObject<Notification>(s);
 
         if (notification is null)
