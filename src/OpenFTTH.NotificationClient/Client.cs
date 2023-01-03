@@ -8,7 +8,10 @@ namespace OpenFTTH.NotificationClient;
 
 internal sealed class NotificationWsClient : WsClient
 {
+    private const int MAX_RETRIES = 10;
+    private const int SLEEP_INTERVAL_MS = 250;
     private readonly Action<string> _onMessageReceivedCallback;
+    private int retries;
     private bool _stop;
 
     public NotificationWsClient(
@@ -59,7 +62,24 @@ internal sealed class NotificationWsClient : WsClient
 
         // Try to connect again
         if (!_stop)
-            ConnectAsync();
+        {
+            if (retries == MAX_RETRIES)
+            {
+                throw new MaxReconnectRetriesReachedException(
+                    $"Reached the max reconnection retries of '{MAX_RETRIES}'.");
+            }
+
+            if (ConnectAsync())
+            {
+                retries = 0;
+            }
+            else
+            {
+                retries++;
+            }
+
+            Thread.Sleep(SLEEP_INTERVAL_MS * retries);
+        }
     }
 
     public override void OnWsReceived(byte[] buffer, long offset, long size)
